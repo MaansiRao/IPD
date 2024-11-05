@@ -1,15 +1,12 @@
 import AACBoard from "./AACBoard"
 import BoardSelector from "./BoardSelector";
 import BoardEditor from "./BoardEditor";
-import DefaultBoard from "./DefaultBoard";
 import { useState, useEffect } from 'react';
-import {BrowserRouter as Router,Routes,Route} from 'react-router-dom';
+import {BrowserRouter as Router,Routes,Route, useLocation} from 'react-router-dom';
 import Register from './pages/register';
 import Login from './pages/login';
 import BoardEnglish from './BoardEnglish';
 import BoardHindi from './BoardHindi';
-import Button from '@mui/material/Button';
-import * as React from 'react';
 import TemporaryDrawer from './components/Sidebar';
 
 
@@ -31,6 +28,11 @@ const App = () => {
   const [view, setView] = useState('selector'); // 'selector', 'editor', 'board'
   const [boards, setBoards] = useState([]);
   const [currentBoard, setCurrentBoard] = useState(null);
+
+  const location = useLocation();
+  console.log(location.pathname);
+  const isAuthPage = location.pathname === '/register' || location.pathname === '/login';
+  console.log(isAuthPage);
 
   useEffect(() => {
     // Load boards from localStorage
@@ -60,7 +62,7 @@ const App = () => {
     <TemporaryDrawer/>
     <div className=" flex-1 min-h-screen bg-gray-100">
       {/* <DefaultBoard/> */}
-      {view === 'selector' && (
+      {/* {view === 'selector' && (
         <BoardSelector
           boards={boards}
           onCreateNew={handleCreateNew}
@@ -78,9 +80,32 @@ const App = () => {
           boardData={currentBoard}
           onBack={handleBackToSelector}
         />
-      )}
+      )} */}
+      {!isAuthPage && (
+          <>
+            {view === 'selector' && (
+              <BoardSelector
+                boards={boards}
+                onCreateNew={handleCreateNew}
+                onSelectBoard={handleSelectBoard}
+              />
+            )}
+            {view === 'editor' && (
+              <BoardEditor
+                onBack={handleBackToSelector}
+                initialBoard={currentBoard}
+              />
+            )}
+            {view === 'board' && currentBoard && (
+              <AACBoard
+                boardData={currentBoard}
+                onBack={handleBackToSelector}
+              />
+            )}
+          </>
+        )}
     <div>
-      <Router>
+      {/* <Router> */}
       <Routes>
       <Route path='/register' element={<Register/>}/>
       <Route path='/login' element={<Login/>}/>
@@ -88,7 +113,7 @@ const App = () => {
       <Route path='/englishboard' element={<BoardEnglish/>}/>
 
       </Routes>
-      </Router>
+      {/* </Router> */}
     </div>
     </div>
     </div>
