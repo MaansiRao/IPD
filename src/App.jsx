@@ -28,6 +28,7 @@ const App = () => {
   const [view, setView] = useState('selector'); // 'selector', 'editor', 'board'
   const [boards, setBoards] = useState([]);
   const [currentBoard, setCurrentBoard] = useState(null);
+  console.log('Hello')
 
   const location = useLocation();
   console.log(location.pathname);
