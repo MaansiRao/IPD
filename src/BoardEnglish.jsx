@@ -217,7 +217,7 @@ const BoardEnglish = () => {
     {
       icon: Gift,
       label: "Surprise?",
-      buttonLabel: "1",
+      buttonLabel: "Surprise",
       color: "text-yellow-500",
     },
     {

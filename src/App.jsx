@@ -108,6 +108,7 @@ const App = () => {
     <div>
       {/* <Router> */}
       <Routes>
+      <Route path='/' element={<BoardEnglish/>}/> 
       <Route path='/register' element={<Register/>}/>
       <Route path='/login' element={<Login/>}/>
       <Route path='/hindiboard' element={<BoardHindi/>}/>
