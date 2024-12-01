@@ -8,6 +8,7 @@ import Login from './pages/login';
 import BoardEnglish from './BoardEnglish';
 import BoardHindi from './BoardHindi';
 import TemporaryDrawer from './components/Sidebar';
+import DailyReport from './DailyReport'; // Adjust the path based on where you saved the file
 
 
 
@@ -112,6 +113,7 @@ const App = () => {
       <Route path='/login' element={<Login/>}/>
       <Route path='/hindiboard' element={<BoardHindi/>}/>
       <Route path='/englishboard' element={<BoardEnglish/>}/>
+      <Route path='/daily-report' element={<DailyReport/>}/>
 
       </Routes>
       {/* </Router> */}
