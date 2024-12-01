@@ -55,6 +55,7 @@ const BoardHindi = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [voices, setVoices] = useState([]);
+ 
 
   const defaultPhrases = [
     {
