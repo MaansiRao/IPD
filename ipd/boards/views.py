@@ -1,6 +1,3 @@
-
-# Create your views here.
-
 from rest_framework import viewsets
 from django.utils.timezone import now, timedelta
 from rest_framework.views import APIView
