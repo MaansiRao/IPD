@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -24,3 +25,7 @@ class Button(models.Model):
     
 class ButtonClick(models.Model):
     button=models.ForeignKey(Button,on_delete=models.CASCADE)
+    clicked_at=models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"{self.button.label} clicked at {self.clicked_at}"
