@@ -4,7 +4,7 @@ from decouple import config
 from rest_framework.response import Response
 
 # Load the dataset
-file_path = config('CSV_FILE_PATH', default='C:/Codes/IPD_backend/ipd/mock_data.csv')
+file_path = config('CSV_FILE_PATH')
 df = pd.read_csv(file_path)
 # Define categories for phrases
 categories = {
@@ -48,7 +48,7 @@ class ParentalReport(APIView):
 
             # Counting occurrences of each category by time of day
             category_counts = df.groupby(["Time_of_Day", "Category"]).size().reset_index(name="Count")
-            
+
             # Finding the most used category for each time of day
             most_used_category_per_time = category_counts.loc[category_counts.groupby("Time_of_Day")["Count"].idxmax()]
             
