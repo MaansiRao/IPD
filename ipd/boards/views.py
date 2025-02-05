@@ -84,7 +84,7 @@ class DynamicBoardGeneration(APIView):
         if not board:
             return JsonResponse({"message": "No weekly dynamic board found yet. Use default board."}, status=404)
 
-        buttons = Button.objects.filter(board=board)
+        buttons = Button.objects.filter(board=board,buttonclick__clicked_at__hour__gte=self.get_time_category(now().hour))
         return JsonResponse({
             "board_name": board.name,
             "time_of_day": time_category,
