@@ -53,6 +53,13 @@ class DynamicBoardGeneration(APIView):
             time_category=self.get_time_category(click.clicked_at.hour)
             time_category_buttons[time_category].append(click.button.id)
 
+            button=click.button
+            if not isinstance(button.category,list):
+                button.category=[]
+
+            if time_category not in button.category:
+                button.category.append(time_category)
+                button.save()
 
         if not clicks.exists():
             return JsonResponse({"message": "No button clicks recorded in the past week."}, status=400)
@@ -84,7 +91,7 @@ class DynamicBoardGeneration(APIView):
         if not board:
             return JsonResponse({"message": "No weekly dynamic board found yet. Use default board."}, status=404)
 
-        buttons = Button.objects.filter(board=board,buttonclick__clicked_at__hour__gte=self.get_time_category(now().hour))
+        buttons = Button.objects.filter(board=board, category__contains=[time_category])
         return JsonResponse({
             "board_name": board.name,
             "time_of_day": time_category,
