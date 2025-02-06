@@ -1,5 +1,7 @@
 from rest_framework import viewsets
 from django.utils.timezone import now, timedelta
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView
 from .models import Board, Button,ButtonClick
 from django.http import JsonResponse
@@ -14,6 +16,20 @@ class BoardViewSet(viewsets.ModelViewSet):
 class ButtonViewSet(viewsets.ModelViewSet):
     queryset = Button.objects.all()
     serializer_class = ButtonSerializer
+class ParentRecommendation(APIView):
+    def post(self,request):
+        board=Board.objects.filter(name__icontains="Weekly Dynamic Board").order_by('-created_at').first()
+        #board=Board.objects.order_by('-created_at').first()
+        if not board:
+            return Response({"error": "Board not found"}, status=status.HTTP_404_NOT_FOUND)
+        button=Button(board=board)
+        serializer=ButtonSerializer(button,data=request.data,partial=True)
+        if serializer.is_valid():
+
+            serializer.save()
+            return JsonResponse({"message":"button added sucessfully","button_id":button.id},status=201)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LogButtonClickView(APIView):
@@ -82,6 +98,7 @@ class DynamicBoardGeneration(APIView):
             "board_id": new_board.id,
             "time_categories": {time: list(set(buttons)) for time, buttons in time_category_buttons.items()}
         })
+
     
     def get_dynamic_board(self):
         
@@ -101,5 +118,6 @@ class DynamicBoardGeneration(APIView):
     def get(self,request):
         
         return self.get_dynamic_board()
+
 
 
