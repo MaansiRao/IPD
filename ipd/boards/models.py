@@ -5,7 +5,7 @@ from django.utils.timezone import now
 # Create your models here.
 
 class Board(models.Model):
-    name=models.CharField(max_length=255,unique=True)
+    name=models.CharField(max_length=255,)
     #creator==models.ForeignKey(User,on_delete=models.CASCADE,related_name='boards')
     language=models.CharField(max_length=255)
     description=models.TextField(blank=True,null=True)
@@ -23,7 +23,7 @@ class Button(models.Model):
     category=models.JSONField(default=list)
 
     def __str__(self):
-        return self.name
+        return self.label
     
 class ButtonClick(models.Model):
     button=models.ForeignKey(Button,on_delete=models.CASCADE)

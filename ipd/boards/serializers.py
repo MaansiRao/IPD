@@ -5,7 +5,7 @@ class ButtonSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = Button
-        fields = ['id', 'label', 'button_label', 'image']
+        fields = ['id', 'label', 'button_label', 'image','category']
 
 class BoardSerializer(serializers.ModelSerializer):
     

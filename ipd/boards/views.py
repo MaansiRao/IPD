@@ -9,6 +9,7 @@ from collections import defaultdict
 from .serializers import BoardSerializer, ButtonSerializer
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+import random
 
 class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()
@@ -18,7 +19,7 @@ class ButtonViewSet(viewsets.ModelViewSet):
     serializer_class = ButtonSerializer
 class ParentRecommendation(APIView):
     def post(self,request):
-        board=Board.objects.filter(name__icontains="Weekly Dynamic Board").order_by('-created_at').first()
+        board=Board.objects.filter(name__exact="Weekly Dynamic Board").order_by('-created_at').first()
         #board=Board.objects.order_by('-created_at').first()
         if not board:
             return Response({"error": "Board not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -62,7 +63,8 @@ class DynamicBoardGeneration(APIView):
     #     ButtonClick.objects.create(button=button)
     def post(self,request, button_id=None):
         one_week_ago=now()-timedelta(days=7)
-        clicks=ButtonClick.objects.filter(clicked_at__gte=one_week_ago)
+        clicks = ButtonClick.objects.filter(clicked_at__gte=one_week_ago)
+        
 
         time_category_buttons=defaultdict(list)
         for click in clicks:
@@ -70,12 +72,14 @@ class DynamicBoardGeneration(APIView):
             time_category_buttons[time_category].append(click.button.id)
 
             button=click.button
-            if not isinstance(button.category,list):
-                button.category=[]
+            if not isinstance(button.category, list) or button.category is None:
+                button.category = []
 
             if time_category not in button.category:
                 button.category.append(time_category)
                 button.save()
+            
+            
 
         if not clicks.exists():
             return JsonResponse({"message": "No button clicks recorded in the past week."}, status=400)
@@ -101,14 +105,18 @@ class DynamicBoardGeneration(APIView):
 
     
     def get_dynamic_board(self):
-        
         time_category = self.get_time_category(now().hour)
-        board = Board.objects.filter(name__icontains="Weekly Dynamic Board").order_by('-created_at').first()
+        board = Board.objects.filter(name__contains="Weekly Dynamic Board").order_by('-created_at').first()
+        buttons = Button.objects.filter(board=board)
+        
+        print(f"Board: {board.name}, Buttons: {list(buttons.values('id', 'label', 'category'))}")
 
         if not board:
             return JsonResponse({"message": "No weekly dynamic board found yet. Use default board."}, status=404)
 
-        buttons = Button.objects.filter(board=board, category__contains=[time_category])
+        
+        buttons = [btn for btn in Button.objects.filter(board=board) if time_category in btn.category]
+
         return JsonResponse({
             "board_name": board.name,
             "time_of_day": time_category,
@@ -118,6 +126,7 @@ class DynamicBoardGeneration(APIView):
     def get(self,request):
         
         return self.get_dynamic_board()
+    
 
 
 
