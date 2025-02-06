@@ -46,412 +46,429 @@ import {
   Settings,
   Volume2,
 } from "lucide-react";
-
-const BoardEnglish = () => {
+import EmergencyButton from "../components/EmergencyButton";
+const BoardHindi = () => {
   const [message, setMessage] = useState("");
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [voices, setVoices] = useState([]);
-  const [selectedVoice, setSelectedVoice] = useState(null);
   const [speechRate, setSpeechRate] = useState(1);
   const [speechPitch, setSpeechPitch] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [voices, setVoices] = useState([]);
+ 
 
   const defaultPhrases = [
     {
       icon: Coffee,
-      label: "I need some chai",
-      buttonLabel: "Chai",
+      label: "मुझे चाय चाहिए",
+      buttonLabel: "चाय",
       color: "text-blue-500",
     },
     {
       icon: Utensils,
-      label: "I want to eat",
-      buttonLabel: "Eat",
+      label: "मुझे खाना है",
+      buttonLabel: "खाना",
       color: "text-green-600",
     },
     {
       icon: Home,
-      label: "I want to go home",
-      buttonLabel: "Home",
+      label: "मैं घर जाना चाहता हूं",
+      buttonLabel: "घर",
       color: "text-purple-600",
     },
     {
       icon: Sun,
-      label: "Good morning!",
-      buttonLabel: "Morning",
+      label: "सुप्रभात!",
+      buttonLabel: "सुप्रभात",
       color: "text-yellow-500",
     },
     {
       icon: Moon,
-      label: "Good night!",
-      buttonLabel: "Night",
+      label: "शुभ रात्रि!",
+      buttonLabel: "रात्रि",
       color: "text-blue-800",
     },
     {
       icon: Smile,
-      label: "How are you?",
-      buttonLabel: "How",
+      label: "कैसे हैं आप?",
+      buttonLabel: "कैसे",
       color: "text-indigo-500",
     },
     {
       icon: Music,
-      label: "Can we play music?",
-      buttonLabel: "Music",
+      label: "क्या हम संगीत बजा सकते हैं?",
+      buttonLabel: "संगीत",
       color: "text-pink-500",
     },
     {
       icon: Book,
-      label: "I want to read",
-      buttonLabel: "Read",
+      label: "मैं पढ़ना चाहता हूं",
+      buttonLabel: "पढ़ना",
       color: "text-orange-500",
     },
     {
       icon: Tv,
-      label: "Let's watch TV",
-      buttonLabel: "TV",
+      label: "चलो टीवी देखें",
+      buttonLabel: "टीवी",
       color: "text-blue-600",
     },
     {
       icon: Heart,
-      label: "I love you!",
-      buttonLabel: "Love",
+      label: "मैं आपसे प्यार करता हूं!",
+      buttonLabel: "प्यार",
       color: "text-red-500",
     },
     {
       icon: Smile,
-      label: "I'm happy",
-      buttonLabel: "Happy",
+      label: "मैं खुश हूं",
+      buttonLabel: "खुश",
       color: "text-yellow-600",
     },
     {
       icon: Phone,
-      label: "Please call",
-      buttonLabel: "Call",
+      label: "कृपया कॉल करें",
+      buttonLabel: "कॉल",
       color: "text-green-500",
     },
     {
       icon: Mail,
-      label: "I have a message",
-      buttonLabel: "Message",
+      label: "मेरे पास एक संदेश है",
+      buttonLabel: "संदेश",
       color: "text-blue-500",
     },
     {
       icon: Car,
-      label: "I need a ride",
-      buttonLabel: "Ride",
+      label: "मुझे सवारी चाहिए",
+      buttonLabel: "सवारी",
       color: "text-gray-600",
     },
     {
       icon: Gift,
-      label: "Thank you!",
-      buttonLabel: "Thanks",
+      label: "धन्यवाद!",
+      buttonLabel: "धन्यवाद",
       color: "text-teal-500",
     },
     {
       icon: Smile,
-      label: "You're welcome",
-      buttonLabel: "Welcome",
+      label: "स्वागत है",
+      buttonLabel: "स्वागत",
       color: "text-indigo-500",
     },
     {
       icon: AlertTriangle,
-      label: "Please help",
-      buttonLabel: "Help",
+      label: "कृपया मदद करें",
+      buttonLabel: "मदद",
       color: "text-red-500",
     },
     {
       icon: Smile,
-      label: "I understand",
-      buttonLabel: "Understand",
+      label: "मैं समझता हूं",
+      buttonLabel: "समझ",
       color: "text-green-500",
     },
     {
       icon: Smile,
-      label: "Nice to meet you",
-      buttonLabel: "Meet",
+      label: "आपसे मिलकर खुशी हुई",
+      buttonLabel: "मिलना",
       color: "text-indigo-500",
     },
     {
       icon: Moon,
-      label: "I'm tired",
-      buttonLabel: "Tired",
+      label: "मैं थक गया हूं",
+      buttonLabel: "थका",
       color: "text-purple-500",
     },
     {
       icon: Tv,
-      label: "Can we watch a movie?",
-      buttonLabel: "Movie",
+      label: "क्या हम फिल्म देख सकते हैं?",
+      buttonLabel: "फिल्म",
       color: "text-blue-600",
     },
     {
       icon: Frown,
-      label: "I'm sad",
-      buttonLabel: "Sad",
+      label: "मैं दुखी हूं",
+      buttonLabel: "दुखी",
       color: "text-indigo-500",
     },
     {
       icon: Home,
-      label: "I need rest",
-      buttonLabel: "Rest",
+      label: "मुझे आराम चाहिए",
+      buttonLabel: "आराम",
       color: "text-purple-600",
     },
     {
       icon: Coffee,
-      label: "I want cold drink",
-      buttonLabel: "Drink",
+      label: "मुझे ठंडा पेय चाहिए",
+      buttonLabel: "पेय",
       color: "text-blue-500",
     },
     {
       icon: Volleyball,
-      label: "Let's play football",
-      buttonLabel: "Football",
+      label: "चलो फुटबॉल खेलें",
+      buttonLabel: "फुटबॉल",
       color: "text-green-500",
     },
     {
       icon: Meh,
-      label: "I'm bored",
-      buttonLabel: "Bored",
+      label: "मुझे बोर हो रहा है",
+      buttonLabel: "बोर",
       color: "text-red-500",
     },
     {
       icon: Gift,
-      label: "Surprise?",
-      buttonLabel: "Surprise",
+      label: "सरप्राइज़?",
+      buttonLabel: "१",
       color: "text-yellow-500",
     },
     {
       icon: Angry,
-      label: "I'm angry",
-      buttonLabel: "Angry",
+      label: "मैं गुस्से में हूं",
+      buttonLabel: "गुस्सा",
       color: "text-indigo-500",
     },
     {
       icon: ShoppingBag,
-      label: "Can we go shopping?",
-      buttonLabel: "Shopping",
+      label: "क्या हम शॉपिंग कर सकते हैं?",
+      buttonLabel: "शॉपिंग",
       color: "text-pink-500",
     },
     {
       icon: Laugh,
-      label: "That's so funny!",
-      buttonLabel: "Funny",
+      label: "यह बहुत मज़ेदार है!",
+      buttonLabel: "मज़ेदार",
       color: "text-purple-600",
     },
     {
       icon: Sparkles,
-      label: "Happy Diwali!",
-      buttonLabel: "Diwali",
+      label: "दीपावली की शुभकामनाएं!",
+      buttonLabel: "दीवाली",
       color: "text-yellow-500",
     },
     {
       icon: Cake,
-      label: "Happy birthday!",
-      buttonLabel: "Birthday",
+      label: "जन्मदिन मुबारक!",
+      buttonLabel: "जन्मदिन",
       color: "text-pink-500",
     },
     {
       icon: Frown,
-      label: "I miss you",
-      buttonLabel: "Miss",
+      label: "मैं आपको याद करता हूं",
+      buttonLabel: "याद",
       color: "text-red-600",
     },
     {
       icon: PartyPopper,
-      label: "Let's celebrate!",
-      buttonLabel: "Celebrate",
+      label: "चलो जश्न मनाएं!",
+      buttonLabel: "जश्न",
       color: "text-orange-500",
     },
     {
       icon: Flower,
-      label: "Happy Raksha Bandhan",
-      buttonLabel: "Rakhi",
+      label: "रक्षा बंधन की शुभकामनाएं",
+      buttonLabel: "राखी",
       color: "text-purple-600",
     },
     {
       icon: Drum,
-      label: "Let's dance!",
-      buttonLabel: "Dance",
+      label: "चलो नाचें!",
+      buttonLabel: "नाच",
       color: "text-indigo-500",
     },
     {
       icon: Soup,
-      label: "Can we have biryani?",
-      buttonLabel: "Biryani",
+      label: "क्या हम बिरयानी खा सकते हैं?",
+      buttonLabel: "बिरयानी",
       color: "text-green-500",
     },
     {
       icon: PartyPopper,
-      label: "Party time!",
-      buttonLabel: "Party",
+      label: "पार्टी का समय!",
+      buttonLabel: "पार्टी",
       color: "text-blue-500",
     },
     {
       icon: Phone,
-      label: "Let's video call",
-      buttonLabel: "Video",
+      label: "चलो वीडियो कॉल करें",
+      buttonLabel: "वीडियो",
       color: "text-yellow-600",
     },
     {
       icon: CandyCane,
-      label: "Happy Christmas!",
-      buttonLabel: "Christmas",
+      label: "क्रिसमस की शुभकामनाएं!",
+      buttonLabel: "क्रिसमस",
       color: "text-green-600",
     },
     {
       icon: Present,
-      label: "Here is a gift",
-      buttonLabel: "Gift",
+      label: "यह रहा उपहार",
+      buttonLabel: "उपहार",
       color: "text-red-500",
     },
     {
       icon: SmilePlus,
-      label: "Let's see fireworks",
-      buttonLabel: "Fireworks",
+      label: "चलो आतिशबाजी देखें",
+      buttonLabel: "आतिशबाजी",
       color: "text-teal-500",
     },
     {
       icon: Pizza,
-      label: "I want pizza",
-      buttonLabel: "Pizza",
+      label: "मुझे पिज्जा चाहिए",
+      buttonLabel: "पिज्जा",
       color: "text-orange-500",
     },
     {
       icon: Trophy,
-      label: "I won!",
-      buttonLabel: "Won",
+      label: "मैं जीत गया!",
+      buttonLabel: "जीत",
       color: "text-purple-500",
     },
     {
       icon: Headphones,
-      label: "I need headphones",
-      buttonLabel: "Headphones",
+      label: "मुझे हेडफोन चाहिए",
+      buttonLabel: "हेडफोन",
       color: "text-blue-800",
     },
     {
       icon: AlertTriangle,
-      label: "I'm scared",
-      buttonLabel: "Scared",
+      label: "मैं डरा हुआ हूं",
+      buttonLabel: "डर",
       color: "text-indigo-500",
     },
     {
       icon: Moon,
-      label: "Happy Eid!",
-      buttonLabel: "Eid",
+      label: "ईद मुबारक!",
+      buttonLabel: "ईद",
       color: "text-green-800",
     },
     {
       icon: PaintBucket,
-      label: "Happy Holi!",
-      buttonLabel: "Holi",
+      label: "होली की शुभकामनाएं!",
+      buttonLabel: "होली",
       color: "text-pink-500",
     },
     {
       icon: Cookie,
-      label: "Can I get a snack?",
-      buttonLabel: "Snack",
+      label: "क्या मुझे नाश्ता मिल सकता है?",
+      buttonLabel: "नाश्ता",
       color: "text-yellow-500",
     },
     {
       icon: Computer,
-      label: "I need my tablet",
-      buttonLabel: "Tablet",
+      label: "मुझे मेरा टैबलेट चाहिए",
+      buttonLabel: "टैबलेट",
       color: "text-indigo-500",
     },
     {
       icon: Calendar,
-      label: "Is today a holiday?",
-      buttonLabel: "Holiday",
+      label: "क्या आज छुट्टी है?",
+      buttonLabel: "छुट्टी",
       color: "text-gray-600",
     },
     {
       icon: Smartphone,
-      label: "Take a selfie!",
-      buttonLabel: "Selfie",
+      label: "सेल्फी लो!",
+      buttonLabel: "सेल्फी",
       color: "text-red-600",
     },
     {
       icon: Camera,
-      label: "I want to take photos",
-      buttonLabel: "Photos",
+      label: "मैं फोटो लेना चाहता हूं",
+      buttonLabel: "फोटो",
       color: "text-orange-600",
     },
     {
       icon: Phone,
-      label: "Let's call",
-      buttonLabel: "Call",
+      label: "चलो कॉल करें",
+      buttonLabel: "कॉल",
       color: "text-blue-500",
     },
     {
       icon: Cake,
-      label: "Where's the food?",
-      buttonLabel: "Food",
+      label: "खाना कहाँ है?",
+      buttonLabel: "खाना",
       color: "text-pink-500",
     },
     {
       icon: Plane,
-      label: "Can we go on vacation?",
-      buttonLabel: "Vacation",
+      label: "क्या हम छुट्टी पर जा सकते हैं?",
+      buttonLabel: "छुट्टी",
       color: "text-purple-600",
     },
     {
       icon: Candy,
-      label: "I want some sweets",
-      buttonLabel: "Sweets",
+      label: "मुझे मिठाई चाहिए",
+      buttonLabel: "मिठाई",
       color: "text-yellow-600",
     },
     {
       icon: Backpack,
-      label: "I need my bag",
-      buttonLabel: "Bag",
+      label: "मुझे मेरा बैग चाहिए",
+      buttonLabel: "बैग",
       color: "text-green-700",
     },
     {
       icon: Phone,
-      label: "Where's my phone?",
-      buttonLabel: "Phone",
+      label: "मेरा फोन कहाँ है?",
+      buttonLabel: "फोन",
       color: "text-blue-600",
     },
     {
       icon: Users,
-      label: "Where are you?",
-      buttonLabel: "Where",
+      label: "आप कहाँ हैं?",
+      buttonLabel: "कहाँ",
       color: "text-teal-500",
     },
     {
       icon: SmilePlus,
-      label: "I'm so excited!",
-      buttonLabel: "Excited",
+      label: "मैं बहुत उत्साहित हूं!",
+      buttonLabel: "उत्साहित",
       color: "text-purple-600",
     },
   ];
 
+  // Fetch available voices on component mount
   useEffect(() => {
-    const loadVoices = () => {
+    const fetchVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
-      setSelectedVoice(availableVoices[0]);
+      const hindiVoices = availableVoices.filter(
+        (voice) => voice.lang === "hi-IN" || voice.lang.startsWith("hi")
+      );
+      setVoices(hindiVoices);
+      if (hindiVoices.length > 0) {
+        setSelectedVoice(hindiVoices[0]); // Set default voice if available
+      }
     };
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
+
+    fetchVoices();
+
+    // SpeechSynthesis event listener to fetch voices when they are loaded
+    window.speechSynthesis.onvoiceschanged = fetchVoices;
   }, []);
 
   const speak = useCallback(
     (text) => {
-      if (!isSpeechEnabled) return;
-      window.speechSynthesis.cancel();
+      if (!isSpeechEnabled || !selectedVoice) return;
       setIsPlaying(true);
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = selectedVoice;
+      utterance.lang = "hi-IN";
       utterance.rate = speechRate;
       utterance.pitch = speechPitch;
-      utterance.volume = 1;
+      utterance.voice = selectedVoice; // Use the selected voice
 
-      utterance.onend = () => setIsPlaying(false);
+      utterance.onend = () => {
+        setIsPlaying(false);
+      };
+
+      utterance.onerror = (event) => {
+        console.error("Speech synthesis error:", event);
+        setIsPlaying(false);
+      };
+
       window.speechSynthesis.speak(utterance);
     },
-    [isSpeechEnabled, selectedVoice, speechRate, speechPitch]
+    [isSpeechEnabled, speechRate, speechPitch, selectedVoice]
   );
 
   const handleButtonClick = (label) => {
@@ -461,14 +478,16 @@ const BoardEnglish = () => {
 
   const toggleSpeech = () => {
     setIsSpeechEnabled(!isSpeechEnabled);
-    window.speechSynthesis.cancel();
   };
 
   return (
     <div>
+      <div>
+        <EmergencyButton/>
+      </div>
       <div className="flex-1 p-4 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">English Board</h1>
+          <h1 className="text-2xl font-bold">Hindi Board</h1>
           <div className="flex gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
@@ -577,4 +596,4 @@ const BoardEnglish = () => {
   );
 };
 
-export default BoardEnglish;
+export default BoardHindi;

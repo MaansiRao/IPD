@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './loginsign.css';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ function Register() {
 
     try {
       localStorage.setItem('registerData', JSON.stringify(formData));
-      alert('Signup successful! Data saved to localStorage.');
+      alert('Signup successful! Redirecting to login...');
       navigate('/login');
     } catch (error) {
       console.error('Error during sign up:', error.message);
@@ -40,11 +39,11 @@ function Register() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-indigo-100 m-4">
+      <div className="w-full max-w-md p-6 space-y-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-indigo-100 m-4">
         <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
           Register
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="parentName" className="block text-sm font-medium text-gray-700">Parent Name</label>
             <input
@@ -148,6 +147,13 @@ function Register() {
             {loading ? 'Submitting...' : 'Submit'}
           </button>
         </form>
+        
+        <div className="text-center mt-4">
+          <span className="text-gray-600">Already a user? </span>
+          <Link to="/login" className="text-indigo-600 font-semibold hover:underline">
+            Login here
+          </Link>
+        </div>
       </div>
     </div>
   );
