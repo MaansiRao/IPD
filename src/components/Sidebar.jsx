@@ -37,6 +37,8 @@ export default function TemporaryDrawer() {
                 handleNavigation('/parentside');
               } else if (text === 'Track My Child') {
                 handleNavigation('/trackmychild');
+              } else if (text === 'Reports') {
+                handleNavigation('/reports');
               }
               // You can add more navigation conditions if necessary
             }}>

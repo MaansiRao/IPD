@@ -1,3 +1,4 @@
+import React from 'react';
 import {BrowserRouter as Router,Routes,Route, useLocation} from 'react-router-dom';
 import Register from './pages/register';
 import Login from './pages/login';
@@ -8,6 +9,7 @@ import CreateNewBoard from "./pages/CreateNewBoard.jsx";
 import MyBoards from "./pages/MyBoards.jsx";
 import MyBoardDetails from "./pages/MyBoardDetails.jsx";
 import TrackMyChild from './pages/TrackMyChild.jsx'
+import Reports from './pages/Reports.jsx';
 
 const App = () => {
   return (
@@ -22,6 +24,7 @@ const App = () => {
       <Route path = '/myboards' element={<MyBoards/>}/>
       <Route path="/board/:boardId" element={<MyBoardDetails />} />
       <Route path= '/trackmychild' element={<TrackMyChild/>}/>
+      <Route path= '/reports' element={<Reports/>}/>
       </Routes>
     </div>
   );
