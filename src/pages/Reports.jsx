@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, MessageCircle, Clock, Award, Brain } from 'lucide-react';
+import Sidebar from '../components/Sidebar.jsx'
 
 const Reports = () => {
   const [categoryData, setCategoryData] = useState([]);
@@ -128,6 +129,10 @@ const Reports = () => {
 //   ];
 
   return (
+    <>
+    <div>
+        <Sidebar/>
+    </div>
     <div className="p-6 space-y-6 bg-gray-50">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Daily Communication Report</h1>
@@ -292,6 +297,7 @@ const Reports = () => {
         </div> */}
       </div>
     </div>
+    </>
   );
 };
 

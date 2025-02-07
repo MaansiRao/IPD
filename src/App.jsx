@@ -10,6 +10,7 @@ import MyBoards from "./pages/MyBoards.jsx";
 import MyBoardDetails from "./pages/MyBoardDetails.jsx";
 import TrackMyChild from './pages/TrackMyChild.jsx'
 import Reports from './pages/Reports.jsx';
+import DynamicBoard from './pages/DynamicBoard.jsx';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
       <Route path="/board/:boardId" element={<MyBoardDetails />} />
       <Route path= '/trackmychild' element={<TrackMyChild/>}/>
       <Route path= '/reports' element={<Reports/>}/>
+      <Route path= '/dynamicboard' element={<DynamicBoard/>}/>
       </Routes>
     </div>
   );
