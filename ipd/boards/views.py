@@ -1,3 +1,4 @@
+
 from rest_framework import viewsets
 from django.utils.timezone import now, timedelta
 from rest_framework.response import Response
@@ -120,13 +121,15 @@ class DynamicBoardGeneration(APIView):
         return JsonResponse({
             "board_name": board.name,
             "time_of_day": time_category,
-            "buttons": [button.label for button in buttons]
+            "buttons_label": [button.label for button in buttons],
+            "buttons_phrase": [button.button_label for button in buttons],
+        
+
         })
 
     def get(self,request):
         
         return self.get_dynamic_board()
     
-
 
 

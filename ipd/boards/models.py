@@ -21,6 +21,7 @@ class Button(models.Model):
     button_label=models.CharField(max_length=50)
     image=models.ImageField(upload_to='board_buttons/images/', blank=True, null=True)
     category=models.JSONField(default=list)
+    icon=models.CharField(max_length=100)
 
     def __str__(self):
         return self.label
