@@ -87,7 +87,7 @@ class DynamicBoardGeneration(APIView):
         new_board = Board.objects.create(
             name=f"Weekly Dynamic Board {now().strftime('%Y-%m-%d')}",
             language="English",
-            description="Generated from last week's usage patterns."
+            
         )
         added_buttons = set()
         for time_category, button_ids in time_category_buttons.items():
@@ -114,17 +114,21 @@ class DynamicBoardGeneration(APIView):
 
         if not board:
             return JsonResponse({"message": "No weekly dynamic board found yet. Use default board."}, status=404)
+        all_buttons = Button.objects.filter(board=board)
+        filtered_buttons = [button for button in all_buttons if time_category in button.category]
 
         
-        buttons = [btn for btn in Button.objects.filter(board=board) if time_category in btn.category]
+        unique_buttons = {button.id: button for button in filtered_buttons}.values()
+
+        
+        
 
         return JsonResponse({
             "board_name": board.name,
             "time_of_day": time_category,
-            "buttons_label": [button.label for button in buttons],
-            "buttons_phrase": [button.button_label for button in buttons],
-        
-
+            "buttons_label": [button.label for button in unique_buttons],
+            "buttons_phrase": [button.button_label for button in unique_buttons],
+            "buttons_icon":[button.icon for button in unique_buttons]
         })
 
     def get(self,request):

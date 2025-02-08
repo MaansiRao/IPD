@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Board, Button
 
 class ButtonAdmin(admin.ModelAdmin):
-    list_display = ('id', 'label', 'button_label', 'image') 
+    list_display = ('id', 'label', 'button_label', 'image','icon') 
     # search_fields = ('label', 'button_label') 
     # list_filter = ('label',) 
 
