@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from .models import Board, Button
 
@@ -5,7 +6,7 @@ class ButtonSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = Button
-        fields = ['id', 'label', 'button_label', 'image']
+        fields = ['id', 'board','label', 'button_label', 'image','category','icon']
 
 class BoardSerializer(serializers.ModelSerializer):
     
@@ -13,4 +14,4 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ['id', 'name', 'language', 'description', 'created_at', 'updated_at', 'buttons']
+        fields = ['id', 'name', 'language', 'created_at', 'updated_at', 'buttons']
