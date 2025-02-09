@@ -5,6 +5,11 @@ from torch.nn.functional import softmax
 from rest_framework.views import APIView
 from decouple import config
 from rest_framework.response import Response
+from django.utils.timezone import now
+import os
+import json
+from boards.models import Button
+
 
 # Load the dataset
 file_path = config('MOCK_DATA_CSV_FILE_PATH')
@@ -40,9 +45,41 @@ def get_time_of_day(timestamp):
     else:
         return "Night"
     
+def update_mock_data_csv(data):
+    try:
+        today = now().date()
+
+        # Load existing CSV if available
+        if os.path.exists(config('MOCK_DATA_CSV_FILE_PATH')):
+            df = pd.read_csv(config('MOCK_DATA_CSV_FILE_PATH'))
+            df["timestamp"] = pd.to_datetime(df["timestamp"])  # Ensure timestamp is datetime
+            # Remove all records with timestamps older than today
+            df = df[df["timestamp"].dt.date == today]
+        else:
+            df = pd.DataFrame(columns=["phrase", "frequency", "timestamp"])
+
+        # Convert incoming data into a DataFrame
+        new_df = pd.DataFrame(data)
+
+        # Ensure timestamp is stored as datetime
+        new_df["timestamp"] = pd.to_datetime(new_df["timestamp"])
+
+        # Filter out data with timestamps older than today
+        new_df = new_df[new_df["timestamp"].dt.date == today]
+
+        # Append new data
+        df = pd.concat([df, new_df], ignore_index=True)
+
+        # Save updated data to CSV
+        df.to_csv(config('MOCK_DATA_CSV_FILE_PATH'), index=False)
+    except Exception as e:
+        raise e
+    
 class ParentalReport(APIView):
     def get(self, request):
         try:
+            data = request.body
+            # update_mock_data_csv(data) #Do not uncomment this yet
             # Assigning categories to the dataset
             df["Category"] = df["Phrase"].apply(categorize_phrase)
 
@@ -82,5 +119,15 @@ class EmotionTrackingReport(APIView):
             data = pd.read_csv(config('SENTIMENT_DATA_CSV_FILE_PATH'))  # Replace with the actual file path in .env
             data["Predicted_Label"] = data["Phrase"].apply(predict_sentiment)
             return Response({"status": "success", "data": data[["Phrase", "Predicted_Label"]].head()})
+        except Exception as e:
+            return Response({"status": "fail", "message": str(e)}, status=500)
+        
+
+#Unique words used
+class UniqueWordsReport(APIView):
+    def get(self, request):
+        try:
+            unique_label_count = Button.objects.values("label").distinct().count()
+            return Response({"status": "success", "data": unique_label_count})
         except Exception as e:
             return Response({"status": "fail", "message": str(e)}, status=500)
