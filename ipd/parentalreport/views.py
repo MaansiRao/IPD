@@ -1,10 +1,13 @@
 import pandas as pd
+import torch
+from transformers import BertTokenizer, BertForSequenceClassification
+from torch.nn.functional import softmax
 from rest_framework.views import APIView
 from decouple import config
 from rest_framework.response import Response
 
 # Load the dataset
-file_path = config('CSV_FILE_PATH')
+file_path = config('MOCK_DATA_CSV_FILE_PATH')
 df = pd.read_csv(file_path)
 # Define categories for phrases
 categories = {
@@ -53,5 +56,31 @@ class ParentalReport(APIView):
             most_used_category_per_time = category_counts.loc[category_counts.groupby("Time_of_Day")["Count"].idxmax()]
             
             return Response({"status": "success", "data": most_used_category_per_time})
+        except Exception as e:
+            return Response({"status": "fail", "message": str(e)}, status=500)
+        
+
+#Emotion tracking by sentiment analysis
+tokenizer = BertTokenizer.from_pretrained(config('MODEL_NAME'))
+model = BertForSequenceClassification.from_pretrained(config('MODEL_NAME'))
+model.eval()
+
+def predict_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=512)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    probs = softmax(outputs.logits, dim=-1)
+    predicted_class = torch.argmax(probs, dim=-1).item()
+    
+    # Mapping BERT output to sentiment labels (adjust as needed)
+    sentiment_mapping = {0: "Negative", 1: "Negative", 2: "Neutral", 3: "Neutral", 4: "Positive"}
+    return sentiment_mapping.get(predicted_class, "Neutral")
+
+class EmotionTrackingReport(APIView):
+    def get(self, request):
+        try:
+            data = pd.read_csv(config('SENTIMENT_DATA_CSV_FILE_PATH'))  # Replace with the actual file path in .env
+            data["Predicted_Label"] = data["Phrase"].apply(predict_sentiment)
+            return Response({"status": "success", "data": data[["Phrase", "Predicted_Label"]].head()})
         except Exception as e:
             return Response({"status": "fail", "message": str(e)}, status=500)
