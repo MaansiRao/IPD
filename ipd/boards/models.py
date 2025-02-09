@@ -7,7 +7,7 @@ from django.utils.timezone import now
 class Board(models.Model):
     name=models.CharField(max_length=255)
     #creator==models.ForeignKey(User,on_delete=models.CASCADE,related_name='boards')
-    language=models.CharField(max_length=255)
+    language=models.CharField(max_length=255,null=True)
     #description=models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)

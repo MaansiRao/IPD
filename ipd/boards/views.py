@@ -1,5 +1,5 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from django.utils.timezone import now, timedelta
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,9 +15,15 @@ import random
 class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        board = serializer.save()
+        return Response({"board_id": board.id}, status=status.HTTP_201_CREATED)
 class ButtonViewSet(viewsets.ModelViewSet):
     queryset = Button.objects.all()
     serializer_class = ButtonSerializer
+
 class ParentRecommendation(APIView):
     def post(self,request):
         board=Board.objects.filter(name__exact="Weekly Dynamic Board").order_by('-created_at').first()
