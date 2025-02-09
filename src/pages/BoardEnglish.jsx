@@ -47,6 +47,7 @@ import {
   Volume2,
 } from "lucide-react";
 import EmergencyButton from "../components/EmergencyButton";
+import AddButton from "../components/AddButton";
 
 const BoardEnglish = () => {
   const [message, setMessage] = useState("");
@@ -467,9 +468,9 @@ const BoardEnglish = () => {
 
   return (
     <div>
-      <duv>
+      <div>
         <EmergencyButton/>
-      </duv>
+      </div>
       <div className="flex-1 p-4 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">English Board</h1>
@@ -576,6 +577,9 @@ const BoardEnglish = () => {
             </button>
           ))}
         </div>
+      </div>
+      <div>
+      <AddButton buttons={buttons} setButtons={setButtons} speak={speak} boardId={1} />
       </div>
     </div>
   );

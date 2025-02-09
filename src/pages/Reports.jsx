@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Activity, TrendingUp, MessageCircle, Clock, Award, Brain } from 'lucide-react';
-import Sidebar from '../components/Sidebar.jsx'
+import { Activity, TrendingUp, MessageCircle, Clock } from 'lucide-react';
 
 const Reports = () => {
   const [categoryData, setCategoryData] = useState([]);
+  const [sentimentData, setSentimentData] = useState([]);
+  const [uniqueWords, setUniqueWords] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/parental-control/parental-report');
-        const result = await response.json();
-        if (result.status === 'success') {
-          console.log(result.data);
-          // Ensure result.data has the expected structure
-          if (result.data && result.data.Category && result.data.Count && result.data.Time_of_Day) {
-            const transformedData = transformCategoryData(result.data);
-            setCategoryData(transformedData);
-          } else {
-            console.error('Invalid data structure');
-          }
+        // Category data
+        const categoryResponse = await fetch('http://127.0.0.1:8000/parental-control/parental-report');
+        const categoryResult = await categoryResponse.json();
+        if (categoryResult.status === 'success') {
+          const transformedData = transformCategoryData(categoryResult.data);
+          setCategoryData(transformedData);
         }
+
+        // Unique words data
+        const uniqueWordsResponse = await fetch('http://127.0.0.1:8000/parental-control/unique-words-report');
+        const uniqueWordsResult = await uniqueWordsResponse.json();
+        if (uniqueWordsResult.status === 'success') {
+          setUniqueWords(uniqueWordsResult.data);
+        }
+
+        // Transform sentiment data from phrases and labels
+        const transformedSentimentData = transformSentimentData();
+        setSentimentData(transformedSentimentData);
+
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -32,51 +40,67 @@ const Reports = () => {
   }, []);
 
   const transformCategoryData = (data) => {
+    if (!data || !data.Time_of_Day) return [];
+
     const timeGroups = {};
-
-    // Reshape data into an array of objects using the data from Category, Count, and Time_of_Day arrays
-    const reshapedData = data.Category.map((category, index) => ({
-      Category: category,
-      Count: data.Count[index],
-      Time_of_Day: data.Time_of_Day[index]
-    }));
-
-    reshapedData.forEach(item => {
-      if (!timeGroups[item.Time_of_Day]) {
-        timeGroups[item.Time_of_Day] = {};
+    data.Time_of_Day.forEach((time, index) => {
+      if (!timeGroups[time]) {
+        timeGroups[time] = {
+          timeOfDay: time,
+          Action: 0,
+          Request: 0,
+          Greeting: 0,
+          Emotion: 0,
+          Love: 0,
+          Other: 0
+        };
       }
-      timeGroups[item.Time_of_Day][item.Category] = item.Count;
+      timeGroups[time][data.Category[index]] = (timeGroups[time][data.Category[index]] || 0) + data.Count[index];
     });
 
-    return Object.entries(timeGroups).map(([time, categories]) => ({
-      timeOfDay: time,
-      Action: categories.Action || 0,
-      Greeting: categories.Greeting || 0,
-      Emotion: categories.Emotion || 0,
-      Request: categories.Request || 0,
-      Love: categories.Love || 0,
-      Other: categories.Other || 0
+    return Object.values(timeGroups);
+  };
+
+  const transformSentimentData = () => {
+    const sentimentCounts = {
+      Positive: 0,
+      Negative: 0,
+      Neutral: 0
+    };
+
+    const sampleData = {
+      Predicted_Label: ["Neutral", "Negative", "Negative", "Positive", "Positive"]
+    };
+
+    sampleData.Predicted_Label.forEach(sentiment => {
+      sentimentCounts[sentiment]++;
+    });
+
+    return Object.entries(sentimentCounts).map(([name, value]) => ({
+      name,
+      value
     }));
   };
 
   const categoryColors = {
     Action: "#8884d8",
-    Greeting: "#82ca9d",
+    Request: "#82ca9d",
     Emotion: "#ffc658",
-    Request: "#ff7300",
+    Greeting: "#ff7300",
     Love: "#ff8042",
     Other: "#8dd1e1"
   };
 
-  // More realistic daily usage statistics
   const usageStats = {
-    totalInteractions: 165,
-    uniqueWords: 20,
+    totalInteractions: categoryData.reduce((sum, item) => 
+      sum + Object.entries(item)
+        .filter(([key]) => key !== 'timeOfDay')
+        .reduce((acc, [_, value]) => acc + value, 0), 0),
+    uniqueWords: uniqueWords,
     avgSessionLength: "5.5 min",
     improvement: '+5%'
   };
 
-  // Hourly activity pattern (more realistic for a child's day)
   const hourlyActivity = [
     { hour: '6AM', interactions: 5 },
     { hour: '7AM', interactions: 12 },
@@ -95,51 +119,30 @@ const Reports = () => {
     { hour: '8PM', interactions: 4 }
   ];
 
-  // Communication success rate
   const successRate = [
     { time: 'Morning', Understood: 85, Needed_Help: 15 },
     { time: 'Afternoon', Understood: 92, Needed_Help: 8 },
     { time: 'Evening', Understood: 88, Needed_Help: 12 }
   ];
 
-  // Sentiment analysis data (Example)
-  const sentimentData = [
-    { name: 'Positive', value: 50 },
-    { name: 'Neutral', value: 25 },
-    { name: 'Negative', value: 15 },
-    { name: 'Excited', value: 5 },
-  ];
-  
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
-  // Most used phrases today
   const topPhrases = [
-    { phrase: "I'm hungry", count: 12 },
-    { phrase: "Water please", count: 10 },
-    { phrase: "Bathroom", count: 8 },
-    { phrase: "Play outside", count: 7 },
-    { phrase: "I'm tired", count: 6 }
+    { phrase: "I need some chai", count: 1 },
+    { phrase: "Where's the remote?", count: 1 },
+    { phrase: "I need a break", count: 1 },
+    { phrase: "Let's meet up", count: 1 },
+    { phrase: "Happy Monday!", count: 1 }
   ];
-
-//   // Learning progress
-//   const learningProgress = [
-//     { category: 'New Words Learned', count: 3 },
-//     { category: 'Phrases Mastered', count: 5 },
-//     { category: 'Complex Sentences', count: 2 }
-//   ];
 
   return (
-    <>
-    <div>
-        <Sidebar/>
-    </div>
     <div className="p-6 space-y-6 bg-gray-50">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Daily Communication Report</h1>
         <p className="text-gray-600 font-medium">{new Date().toLocaleDateString()}</p>
       </div>
       
-      {/* Enhanced Stats Overview */}
+      {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between">
@@ -182,29 +185,30 @@ const Reports = () => {
         </div>
       </div>
 
-     {/* Category Usage by Time */}
-     <div className="col-span-2 bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Category Usage by Time of Day</h2>
-          {!loading && (
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={categoryData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="timeOfDay" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {Object.keys(categoryColors).map((category) => (
-                  <Bar 
-                    key={category}
-                    dataKey={category}
-                    stackId="a"
-                    fill={categoryColors[category]}
-                  />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
+      {/* Category Usage by Time */}
+      <div className="col-span-2 bg-white p-6 rounded-xl shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Category Usage by Time of Day</h2>
+        {!loading && (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={categoryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="timeOfDay" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {Object.keys(categoryColors).map((category) => (
+                <Bar 
+                  key={category}
+                  dataKey={category}
+                  stackId="a"
+                  fill={categoryColors[category]}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
       {/* Main Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Hourly Activity Pattern */}
@@ -277,27 +281,8 @@ const Reports = () => {
             ))}
           </div>
         </div>
-
-        {/* Learning Progress */}
-        {/* <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Today's Learning Progress</h2>
-          <div className="space-y-4">
-            {learningProgress.map((item, index) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700">{item.category}</span>
-                  <div className="flex items-center">
-                    <Award className="h-5 w-5 text-yellow-500 mr-2" />
-                    <span className="text-lg font-semibold">{item.count}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
     </div>
-    </>
   );
 };
 

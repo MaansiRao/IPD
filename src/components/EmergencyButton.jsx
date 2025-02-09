@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React,{ useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 const EmergencyButton = ({ onTriggerEmergency }) => {
