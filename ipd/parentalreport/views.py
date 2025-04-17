@@ -118,7 +118,8 @@ class EmotionTrackingReport(APIView):
         try:
             data = pd.read_csv(config('SENTIMENT_DATA_CSV_FILE_PATH'))  # Replace with the actual file path in .env
             data["Predicted_Label"] = data["Phrase"].apply(predict_sentiment)
-            return Response({"status": "success", "data": data[["Phrase", "Predicted_Label"]].head()})
+            label_counts = data["Predicted_Label"].value_counts().to_dict()
+            return Response({"status": "success", "data": label_counts})
         except Exception as e:
             return Response({"status": "fail", "message": str(e)}, status=500)
         
