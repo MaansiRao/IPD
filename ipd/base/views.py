@@ -7,9 +7,12 @@ from rest_framework.response import Response
 from decouple import config
 import json
 import requests
+from users.permissions import *
 
 # Create your views here.
 class Notification(APIView):
+    permission_classes = [IsChild]
+
     def post(self, request):
         subject = 'Emergency Alert'
         message = f'Your child pressed emergency button at time {datetime.now().strftime("%H:%M:%S")}. Please contact them asap'
@@ -24,6 +27,8 @@ class Notification(APIView):
         
 
 class Location(APIView):
+    permission_classes = [IsChild]
+    
     def get(self, request):
         try:
             ip_res = requests.get(config('GET_IP_ADDRESS_API'))

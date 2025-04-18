@@ -1,14 +1,16 @@
 
 from django.db import models
 from django.utils.timezone import now
+from users.models import User
 
 # Create your models here.
 
 class Board(models.Model):
-    name=models.CharField(max_length=255)
-    #creator==models.ForeignKey(User,on_delete=models.CASCADE,related_name='boards')
-    language=models.CharField(max_length=255,null=True)
-    #description=models.TextField(blank=True,null=True)
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'parent'}, related_name='parent_boards')
+    child = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'child'}, related_name='child_boards')
+    language = models.CharField(max_length=255,null=True)
+    description = models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -29,6 +31,7 @@ class Button(models.Model):
 class ButtonClick(models.Model):
     button=models.ForeignKey(Button,on_delete=models.CASCADE)
     clicked_at=models.DateTimeField(default=now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.button.label} clicked at {self.clicked_at}"

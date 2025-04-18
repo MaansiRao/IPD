@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from django.utils.timezone import now
 import os
 import json
-from boards.models import Button
-
+from boards.models import *
+from users.permissions import *
 
 # Load the dataset
 file_path = config('MOCK_DATA_CSV_FILE_PATH')
@@ -76,6 +76,8 @@ def update_mock_data_csv(data):
         raise e
     
 class ParentalReport(APIView):
+    permission_classes = [IsParent]
+
     def get(self, request):
         try:
             data = request.body
@@ -114,21 +116,28 @@ def predict_sentiment(text):
     return sentiment_mapping.get(predicted_class, "Neutral")
 
 class EmotionTrackingReport(APIView):
+    permission_classes = [IsParent]
+
     def get(self, request):
         try:
-            data = pd.read_csv(config('SENTIMENT_DATA_CSV_FILE_PATH'))  # Replace with the actual file path in .env
+            data = pd.read_csv(config('SENTIMENT_DATA_CSV_FILE_PATH'))
             data["Predicted_Label"] = data["Phrase"].apply(predict_sentiment)
             label_counts = data["Predicted_Label"].value_counts().to_dict()
             return Response({"status": "success", "data": label_counts})
         except Exception as e:
             return Response({"status": "fail", "message": str(e)}, status=500)
         
-
 #Unique words used
 class UniqueWordsReport(APIView):
+    permission_classes = [IsParent]
+
     def get(self, request):
         try:
-            unique_label_count = Button.objects.values("label").distinct().count()
+            child = User.objects.filter(parent=request.user, role='child').first()
+            if not child:
+                return Response({"status": "fail", "message": "No child found for the logged-in parent"}, status=404)
+            
+            unique_label_count = ButtonClick.objects.filter(user=child).values('button').distinct().count()
             return Response({"status": "success", "data": unique_label_count})
         except Exception as e:
             return Response({"status": "fail", "message": str(e)}, status=500)

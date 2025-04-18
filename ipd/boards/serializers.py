@@ -9,9 +9,8 @@ class ButtonSerializer(serializers.ModelSerializer):
         fields = ['id', 'board','label', 'button_label', 'image','category','icon']
 
 class BoardSerializer(serializers.ModelSerializer):
-    
     buttons = ButtonSerializer(many=True, read_only=True)  
-
     class Meta:
         model = Board
-        fields = ['id', 'name', 'language', 'created_at', 'updated_at', 'buttons']
+        fields = ['id', 'name', 'language', 'created_at', 'updated_at', 'buttons', 'child']
+        read_only_fields = ['parent'] 
