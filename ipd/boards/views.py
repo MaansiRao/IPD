@@ -4,10 +4,10 @@ from django.utils.timezone import now, timedelta
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .models import Board, Button,ButtonClick
+from .models import Board, Button,ButtonClick,DefaultBoard,DefaultButton
 from django.http import JsonResponse
 from collections import defaultdict
-from .serializers import BoardSerializer, ButtonSerializer
+from .serializers import *
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -19,7 +19,7 @@ class BoardViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsParent]
+            return [IsParent()]
         return [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -27,6 +27,22 @@ class BoardViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         board = serializer.save(parent=request.user)
         return Response(self.get_serializer(board).data, status=status.HTTP_201_CREATED)
+class DefaultBoardView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        board=DefaultBoard.objects.filter(language=request.user.language).first()
+        if not board:
+            return Response({"detail":"Board not found for user's language"},status=404)
+
+        
+        board_serializer=DefaultBoardSerializer(board)
+        buttons=DefaultButton.objects.filter(board=board)
+        button_serializer=DefaultButtonSerializer(buttons,many=True)
+
+        return Response({
+            "board":board_serializer.data,
+            "button":button_serializer.data
+        })
     
 class ButtonViewSet(viewsets.ModelViewSet):
     queryset = Button.objects.all()

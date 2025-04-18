@@ -1,28 +1,20 @@
-import os
-import django
-import sys
-import random
-from datetime import timedelta
-from django.utils.timezone import now
+# import os
+# import django
+# import sys
 
-# Get the absolute path to your project directory (where manage.py is located)
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# # Setup Django
+# PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(PROJECT_ROOT)
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ipd.settings")
+# django.setup()
 
-# Add project root to Python path
-sys.path.append(PROJECT_ROOT)
+from boards.models import DefaultBoard, DefaultButton
 
-# Set up Django settings module
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ipd.settings")
+# Ensure you define 'board' first
+board, created = DefaultBoard.objects.get_or_create(name="Default Board",language="English")
 
-# Initialize Django
-django.setup()
-
-# Import models
-from boards.models import Board, Button, ButtonClick
-
-# Default phrases data
 defaultPhrases = [
-    {"icon": "Coffee", "label": "I need some chai", "button_label": "Chai", "color": "text-blue-500"},
+     {"icon": "Coffee", "label": "I need some chai", "button_label": "Chai", "color": "text-blue-500"},
     {"icon": "Utensils", "label": "I want to eat", "button_label": "Eat", "color": "text-green-600"},
     {"icon": "Home", "label": "I want to go home", "button_label": "Home", "color": "text-purple-600"},
     {"icon": "Sun", "label": "Good morning!", "button_label": "Morning", "color": "text-yellow-500"},
@@ -55,7 +47,7 @@ defaultPhrases = [
     {"icon": "Sparkles", "label": "Happy Diwali!", "button_label": "Diwali", "color": "text-yellow-500"},
     {"icon": "Cake", "label": "Happy birthday!", "button_label": "Birthday", "color": "text-pink-500"},
     {"icon": "Frown", "label": "I miss you", "button_label": "Miss", "color": "text-red-600"},
-    {"icon": "PartyPopper", "label": "Let's celebrate!", "button_label": "Celebrate", "color": "text-orange-500"},
+     {"icon": "PartyPopper", "label": "Let's celebrate!", "button_label": "Celebrate", "color": "text-orange-500"},
     {"icon": "Flower", "label": "Happy Raksha Bandhan", "button_label": "Rakhi", "color": "text-purple-600"},
     {"icon": "Drum", "label": "Let's dance!", "button_label": "Dance", "color": "text-indigo-500"},
     {"icon": "Soup", "label": "Can we have biryani?", "button_label": "Biryani", "color": "text-green-500"},
@@ -70,51 +62,17 @@ defaultPhrases = [
     {"icon": "AlertTriangle", "label": "I'm scared", "button_label": "Scared", "color": "text-indigo-500"},
     {"icon": "Moon", "label": "Happy Eid!", "button_label": "Eid", "color": "text-green-800"},
     {"icon": "PaintBucket", "label": "Happy Holi!", "button_label": "Holi", "color": "text-pink-500"},
+    
 ]
 
-def generate_mock_dynamic_board():
-    # Step 1: Ensure the board exists
-    board, created = Board.objects.get_or_create(
-        name="Mock Dynamic Board",
-        defaults={"language": "English"}
+# Create Buttons based on the phrases
+for phrase in defaultPhrases:
+    DefaultButton.objects.get_or_create(
+        board=board,
+        label=phrase["label"],
+        button_label=phrase["button_label"],
+        icon=phrase["icon"],
+        category=[phrase["color"]],
     )
 
-    if created:
-        print(f"✅ Created new board: {board.name}")
-    else:
-        print(f"✔ Board '{board.name}' already exists.")
-
-    # Step 2: Populate buttons from defaultPhrases
-    button_objects = []
-    created_count = 0
-
-    for phrase in defaultPhrases:
-        button, created = Button.objects.get_or_create(
-            board=board,
-            button_label=phrase["button_label"],
-            defaults={
-                "label": phrase["label"],
-                "icon": phrase["icon"],
-                "category": [],  # Assuming categories are not provided
-            }
-        )
-
-        if created:
-            created_count += 1
-        button_objects.append(button)
-
-    print(f"✅ {created_count} new buttons added to '{board.name}'.")
-
-    # Step 3: Simulate random button clicks
-    if button_objects:
-        for _ in range(30):  # Generate 30 random button clicks
-            button = random.choice(button_objects)
-            click_time = now() - timedelta(days=random.randint(0, 6), hours=random.randint(6, 22))
-
-            ButtonClick.objects.create(button=button, clicked_at=click_time)
-        
-
-        print(" Simulated 30 random button clicks.")
-
-# Run the function
-generate_mock_dynamic_board()
+print(f"Added {len(defaultPhrases)} default buttons to board: {board.name}")
