@@ -38,13 +38,7 @@ class Button(models.Model):
     def __str__(self):
         return self.label
     
-class ButtonClick(models.Model):
-    button=models.ForeignKey(Button,on_delete=models.CASCADE)
-    clicked_at=models.DateTimeField(default=now)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.button.label} clicked at {self.clicked_at}"
 class DefaultButton(models.Model):
     board=models.ForeignKey(DefaultBoard,on_delete=models.CASCADE)
     label=models.CharField(max_length=300)
@@ -54,3 +48,12 @@ class DefaultButton(models.Model):
     icon=models.CharField(max_length=100,null=True)
     def __str__(self):
         return self.label
+    
+class ButtonClick(models.Model):
+    button=models.ForeignKey(Button,on_delete=models.CASCADE,null=True,blank=True)
+    default_button=models.ForeignKey(DefaultButton,on_delete=models.CASCADE,null=True,blank=True)
+    clicked_at=models.DateTimeField(default=now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.button.label} clicked at {self.clicked_at}"
