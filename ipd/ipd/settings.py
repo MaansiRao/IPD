@@ -71,6 +71,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://ipd-1.onrender.com",
 ]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 
 # CORS_ALLOW_ALL_ORIGINS = True
