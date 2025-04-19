@@ -74,6 +74,10 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# (Optional) If you want Django to honour X-Forwarded-Host for building URLs:
+USE_X_FORWARDED_HOST = True
 
 # CORS_ALLOW_ALL_ORIGINS = True
 
